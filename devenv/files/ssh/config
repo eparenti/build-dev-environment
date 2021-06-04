@@ -1,0 +1,8 @@
+host 150.*
+   User instructor
+   Port 22
+   PreferredAuthentications publickey
+   StrictHostKeyChecking no
+   ForwardX11 no
+   ForwardX11Trusted no
+   IdentityFile ~/.ssh/gls_ucf.rsa

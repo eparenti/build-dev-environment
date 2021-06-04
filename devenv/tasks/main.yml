@@ -1,0 +1,68 @@
+---
+    - name: Install curriculum dev packages
+      package:
+        name: "{{ packages }}"
+        state: latest
+
+    - name: Copy ssh files
+      copy:
+        src: files/ssh/
+        dest: /home/eparenti/.ssh/
+        owner: "{{ devuser }}"
+        group: "{{ devuser }}"
+        mode: '0700'
+
+    - name: Copy .bashrc file
+      copy:
+        src: files/bashprompt/.bashrc
+        dest: /home/eparenti/
+        owner: "{{ devuser }}"
+        group: "{{ devuser }}"
+        mode: '0700'
+
+    - name: Copy bash-git-prompt files
+      copy:
+        src: files/bashprompt/.bash-git-prompt/
+        dest: /home/eparenti/.bash-git-prompt/
+        owner: "{{ devuser }}"
+        group: "{{ devuser }}"
+        mode: '0700'
+
+    - name: Copy bash auto completion files
+      copy:
+        src: files/bashprompt/bash_completion.d
+        dest: /etc/bash_completion.d
+        owner: "{{ devuser }}"
+        group: "{{ devuser }}"
+        mode: '0700'
+
+    - name: Copy flamel container wrapper script
+      copy:
+        src: files/flamelc/flamel.sh
+        dest: "/home/{{ devuser }}/.local/bin/"
+        owner: "{{ devuser }}"
+        group: "{{ devuser }}"
+        mode: '0700'
+
+    - name: Copy .vimrc file
+      copy:
+        src: files/vim/.vimrc
+        dest: "/home/{{ devuser }}/"
+        owner: "{{ devuser }}"
+        group: "{{ devuser }}"
+        mode: '0700'
+
+    - name: Copy vim plugin files
+      synchronize:
+        src: files/vim/.vim/
+        dest: "/home/{{ devuser }}/.vim/"
+        #owner: "{{ devuser }}"
+        #group: "{{ devuser }}"
+        #mode: '0700'
+
+    - name: Ensure podman is started
+      service:
+        name: podman
+        state: started
+        enabled: true
+
