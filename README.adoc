@@ -10,7 +10,6 @@
 
 = TODO:
 To be added in future iterations
-# - Flamel
 - Spellr
 - Vale
 - pre-commit
