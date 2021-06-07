@@ -1,0 +1,21 @@
+= Done:
+- vim
+- Copy .bashrc file
+- Copy bash-git-prompt files
+- Copy bash auto completion files
+- Copy flamel container wrapper script
+- Copy .vimrc file
+- Copy vim plugin files
+- Ensure podman is started
+
+= TODO:
+To be added in future iterations
+# - Flamel
+- Spellr
+- Vale
+- pre-commit
+
+= Instructions
+
+1. Clone repository
+2. Run `ansible-playbook deploy.yml'
