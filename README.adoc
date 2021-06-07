@@ -18,4 +18,5 @@ To be added in future iterations
 = Instructions
 
 1. Clone repository
-2. Run `ansible-playbook deploy.yml'
+2. Modify variables in vars/main.yml
+3. Run `ansible-playbook deploy.yml'
