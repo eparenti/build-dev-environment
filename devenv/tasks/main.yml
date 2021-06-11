@@ -16,6 +16,7 @@
         mode: '0700'
 
     - name: Copy bash auto completion files
+      become: True
       copy:
         src: files/bashprompt/bash_completion.d
         dest: /etc/bash_completion.d
@@ -26,34 +27,46 @@
     - name: Copy flamel container wrapper script
       copy:
         src: files/flamelc/flamel.sh
-        dest: "/home/{{ devuser }}/.local/bin/"
+        dest: "{{ ansible_env['HOME'] }}/.local/bin/"
         owner: "{{ ansible_env['LOGNAME'] }}"
         group: "{{ ansible_env['LOGNAME'] }}"
-        mode: '0700'
+        mode: '0664'
 
     - name: Copy .vimrc file
       copy:
         src: files/vim/.vimrc
-        dest: "/home/{{ devuser }}/"
+        dest: "{{ ansible_env['HOME'] }}/"
         owner: "{{ ansible_env['LOGNAME'] }}"
         group: "{{ ansible_env['LOGNAME'] }}"
         mode: '0700'
 
     - name: Copy vim plugin files
-      synchronize:
+      #synchronize:
+      copy:
         src: files/vim/.vim/
         dest: "{{ ansible_env['HOME'] }}/.vim/"
         owner: "{{ ansible_env['LOGNAME'] }}"
         group: "{{ ansible_env['LOGNAME'] }}"
-        #mode: '0700'
+        mode: '0775'
 
-#    - name: Ensure podman is started
-#      service:
-#        name: podman
-#        state: started
-#        enabled: true
+    - name: Install Vundle Plugin from git
+      git:
+        repo: 'https://github.com/VundleVim/Vundle.vim.git'
+        dest: ~/.vim/bundle/Vundle.vim
+
+#    - name: Run PluginInstall
+#      shell: vim -E -s -c "source ~/.vimrc" -c PluginInstall -c qa
+#      ignore_errors: yes
+
+    - name: Ensure podman is started
+      become: True
+      service:
+        name: podman
+        state: started
+        enabled: true
 #
-#    - name: Install curriculum dev packages
-#      package:
-#        name: "{{ packages }}"
-#        state: latest
+    - name: Install curriculum dev packages
+      become: True
+      package:
+        name: "{{ packages }}"
+        state: latest
