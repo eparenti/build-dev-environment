@@ -1,5 +1,5 @@
 ---
-  devuser: eparenti
+#  devuser: eparenti
   packages:
     - vim-minimal
     - vim-enhanced

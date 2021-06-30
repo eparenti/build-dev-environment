@@ -10,7 +10,7 @@ if [ -f /etc/bash_completion.d/lab_completion.bash ]; then
 fi
 
 # User specific environment
-PATH="$HOME/.local/bin:$HOME/bin:/home/eparenti/vscodium:$PATH"
+PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 export PATH
 
 if [ -f "$HOME/.bash-git-prompt/gitprompt.sh" ]; then

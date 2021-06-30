@@ -41,7 +41,7 @@ Plugin 'airblade/vim-gitgutter'
 "Plugin 'tomsar/molokai'
 Plugin 'flazz/vim-colorschemes'
 Plugin 'joshdick/onedark.vim' " onedark colortheme
-Plugin 'morhetz/gruvbox'
+"Plugin 'morhetz/gruvbox'
 Plugin 'jnurmine/Zenburn'
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -58,7 +58,7 @@ filetype plugin on    " required
 " see :h vundle for more details or wiki for FAQ
 
 syntax enable
-colorscheme gruvbox
+"colorscheme gruvbox
 set bg=dark
 "runtime matchit.vim
 let g:airline_theme='jellybeans'
