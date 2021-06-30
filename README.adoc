@@ -10,9 +10,7 @@
 
 = TODO:
 To be added in future iterations
-- Spellr
 - Vale
-- pre-commit
 
 = Instructions
 
