@@ -1,0 +1,468 @@
+---
+- name: Prep system for flamel container, pre-commit, spellr, and RPM creation
+  hosts: localhost
+  vars:
+    course_upper: "{{ lookup('file', '/etc/rht') | regex_search('RHT_COURSE=.*') | regex_replace('RHT_COURSE=') | upper }}"
+    github_repos:
+      - flamel-container
+      - pcommit-config
+      - spellr
+      # Add additional github repos to clone.
+      # This assumes git@github.com:RedHatTraining/
+      # as the base.
+      - "{{ course_upper }}"
+    # The default_tag variable changes flamel.sh to use
+    # a different container image than flamel:latest
+    default_tag: latest
+    #default_tag: asciidoc
+    # Set repo_dir to have the github repositories cloned to
+    # a subdirectory of {{ ansible_env['HOME'] }}.
+    repo_dir: Curriculum
+    # Using mode ssh requires that the variables file contains your SSH keys
+    # for authenticating to github. Using mode https will prompt for your
+    # github password. NOTE: github will stop using password authentication
+    # on August 13, 2021. You can still set the mode to https provided you
+    # have configured a personal access token for github.
+    mode: https
+  vars_files:
+    - variables.yml
+  gather_facts: True
+
+  tasks:
+    - name: Install additional software
+      become: True
+      dnf:
+        name:
+          - podman
+          - git
+          - python3-virtualenv
+          - python2
+          - aspell-en
+          - rpm-build
+          - rpm-sign
+          - make
+          - setools-console
+          - python3-pip
+        state: present
+      tags: always
+
+    - name: Install optional software
+      become: True
+      dnf:
+        name:
+          - twine
+        state: present
+      ignore_errors: True
+      tags: always
+
+    - name: Give {{ ansible_env['LOGNAME'] }} full sudo access
+      become: True
+      copy:
+        content: "{{ ansible_env['LOGNAME'] }}  ALL=(ALL)  NOPASSWD: ALL"
+        dest: /etc/sudoers.d/{{ ansible_env['LOGNAME'] }}
+      tags: sudo
+
+    - name: Create local directories
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ ansible_env['LOGNAME'] }}"
+        group: "{{ ansible_env['LOGNAME'] }}"
+        mode: '0775'
+      loop:
+        - "{{ ansible_env['HOME'] }}/.bash"
+        - "{{ ansible_env['HOME'] }}/bin"
+        - "{{ ansible_env['HOME'] }}/rpmbuild"
+      tags: always
+
+    - name: Create local directory for repos
+      file:
+        path: "{{ ansible_env['HOME'] }}/{{ repo_dir }}"
+        state: directory
+        owner: "{{ ansible_env['LOGNAME'] }}"
+        group: "{{ ansible_env['LOGNAME'] }}"
+        mode: '0775'
+      tags: github
+      when: repo_dir is defined
+
+    - name: Modify .bashrc to change PS1 prompt for git
+      blockinfile:
+        path: "{{ ansible_env['HOME'] }}/.bashrc"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK PS1"
+        owner: "{{ ansible_env['LOGNAME'] }}"
+        group: "{{ ansible_env['LOGNAME'] }}"
+        mode: '0644'
+        state: present
+        block: "{{ lookup('file', 'files/bashrc_git') }}"
+      tags: ps1
+
+    - name: Create private directories for {{ ansible_env['LOGNAME'] }}
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ ansible_env['LOGNAME'] }}"
+        group: "{{ ansible_env['LOGNAME'] }}"
+        mode: '0700'
+      loop:
+        - "{{ ansible_env['HOME'] }}/.ssh"
+        - "{{ ansible_env['HOME'] }}/.ansible/tmp"
+      tags: always
+
+    - block:
+        - name: Copy lab_rsa to {{ ansible_env['HOME'] }}/.ssh
+          copy:
+            content: "{{ lab_rsa }}"
+            dest: "{{ ansible_env['HOME'] }}/.ssh/lab_rsa"
+            owner: "{{ ansible_env['LOGNAME'] }}"
+            group: "{{ ansible_env['LOGNAME'] }}"
+            mode: '0600'
+          when:
+            - lab_rsa is defined
+            - ansible_fqdn == "workstation.lab.example.com"
+
+        - name: Copy lab_rsa.pub to {{ ansible_env['HOME'] }}/.ssh
+          become: True
+          copy:
+            content: "{{ lab_rsa_pub }}"
+            dest: "{{ ansible_env['HOME'] }}/.ssh/lab_rsa.pub"
+            owner: "{{ ansible_env['LOGNAME'] }}"
+            group: "{{ ansible_env['LOGNAME'] }}"
+            mode: '0644'
+          when:
+            - lab_rsa_pub is defined
+            - ansible_fqdn == "workstation.lab.example.com"
+
+      rescue:
+        # This task requires running the playbook as: sudo ansible-playbook
+        - name: Copy /root/.ssh/lab_rsa to {{ ansible_env['HOME'] }}/.ssh
+          become: True
+          copy:
+            src: /root/.ssh/lab_rsa
+            dest: "{{ ansible_env['HOME'] }}/.ssh/lab_rsa"
+            owner: "{{ ansible_env['LOGNAME'] }}"
+            group: "{{ ansible_env['LOGNAME'] }}"
+            mode: '0600'
+          when:
+            - ansible_fqdn == "workstation.lab.example.com"
+            - ansible_env['LOGNAME'] != "student"
+            - ansible_env['LOGNAME'] != "root"
+
+        # This task requires running the playbook as: sudo ansible-playbook
+        - name: Copy /root/.ssh/lab_rsa.pub to {{ ansible_env['HOME'] }}/.ssh
+          become: True
+          copy:
+            src: /root/.ssh/lab_rsa.pub
+            dest: "{{ ansible_env['HOME'] }}/.ssh/lab_rsa.pub"
+            owner: "{{ ansible_env['LOGNAME'] }}"
+            group: "{{ ansible_env['LOGNAME'] }}"
+            mode: '0644'
+          when:
+            - ansible_fqdn == "workstation.lab.example.com"
+            - ansible_env['LOGNAME'] != "student"
+            - ansible_env['LOGNAME'] != "root"
+
+    - name: Add GitHub keys for {{ git_fullname }}
+      copy:
+        content: "{{ item['data'] }}"
+        dest: "{{ ansible_env['HOME'] }}/.ssh/{{ item['name'] }}"
+        owner: "{{ ansible_env['LOGNAME'] }}"
+        group: "{{ ansible_env['LOGNAME'] }}"
+        mode: "{{ item['mode'] }}"
+      when: 
+        - mode == "ssh"
+        - github_keys is defined
+      loop: "{{ github_keys }}"
+      loop_control:
+        label: Adding key {{ item['name'] }} to {{ ansible_env['HOME'] }}/.ssh/
+      tags: github
+
+    - name: Create {{ ansible_env['HOME'] }}/.ssh/rol_rsa
+      copy:
+        content: "{{ rol_rsa }}"
+        dest: "{{ ansible_env['HOME'] }}/.ssh/rol_rsa"
+        owner: "{{ ansible_env['LOGNAME'] }}"
+        group: "{{ ansible_env['LOGNAME'] }}"
+        mode: '0700'
+
+    # This task needs to be examined again.
+    # It *should* Only add the classroom VMs (classroom, bastion, utility, etc)
+    # if found in /etc/hosts
+    - name: Add VM block to {{ ansible_env['HOME'] }}/.ssh/config
+      blockinfile:
+        path: "{{ ansible_env['HOME'] }}/.ssh/config"
+        owner: "{{ ansible_env['LOGNAME'] }}"
+        group: "{{ ansible_env['LOGNAME'] }}"
+        mode: '0644'
+        state: present
+        create: true
+        marker_begin: VMs
+        insertbefore: BOF
+        block: |
+          Host classroom
+            User root
+            IdentityFile ~/.ssh/rol_rsa
+            StrictHostKeyChecking accept-new
+
+          Host *.example.com
+            IdentityFile ~/.ssh/lab_rsa
+            StrictHostKeyChecking no
+
+          Host bastion
+            IdentityFile ~/.ssh/lab_rsa
+            StrictHostKeyChecking accept-new
+
+          Host utility
+            IdentityFile ~/.ssh/lab_rsa
+            StrictHostKeyChecking accept-new
+      when:
+        - ansible_fqdn == "workstation.lab.example.com"
+        - ansible_env['LOGNAME'] != "student"
+
+    - name: Add GitHub block to {{ ansible_env['HOME'] }}/.ssh/config
+      blockinfile:
+        path: "{{ ansible_env['HOME'] }}/.ssh/config"
+        owner: "{{ ansible_env['LOGNAME'] }}"
+        group: "{{ ansible_env['LOGNAME'] }}"
+        mode: '0644'
+        state: present
+        create: true
+        marker_begin: GITHUB
+        insertafter: EOF
+        block: |
+          Host github.com
+            User git
+            IdentityFile ~/.ssh/{{ item['name'] }}
+            StrictHostKeyChecking accept-new
+      when:
+        - mode == "ssh"
+        - github_keys is defined
+        - item['type'] == "private"
+      loop: "{{ github_keys }}"
+      loop_control:
+        label: Adding github block to {{ ansible_env['HOME'] }}/.ssh/config
+      tags: github
+
+    - name: Configure basic git settings
+      git_config:
+        scope: global
+        name: "{{ item['name'] }}"
+        value: "{{ item['value'] }}"
+      loop: "{{ git }}"
+      tags: git
+
+    - name: Clone github repositories with ssh keys
+      git:
+        repo: "git@github.com:RedHatTraining/{{ item }}"
+        dest: "{{ ansible_env['HOME'] }}/{{ repo_dir | default() }}/{{ item }}"
+      loop: "{{ github_repos }}"
+      loop_control:
+        label: Cloning {{ item }} repository to {{ ansible_env['HOME'] }}/{{ repo_dir | default() }}/{{ item }}
+      when:
+        - mode == "ssh"
+        - github_keys is defined
+      tags: github
+
+    - name: Clone github repositories with https
+      git:
+        repo: "https://github.com/RedHatTraining/{{ item }}"
+        dest: "{{ ansible_env['HOME'] }}/{{ repo_dir | default() }}/{{ item }}"
+      loop: "{{ github_repos }}"
+      loop_control:
+        label: Cloning {{ item }} repository to {{ ansible_env['HOME'] }}/{{ repo_dir | default() }}/{{ item }}
+      when: mode == "https"
+      tags: github
+
+    - name: Copy flamel.sh to {{ ansible_env['HOME'] }}/bin/
+      copy:
+        src: "{{ ansible_env['HOME'] }}/{{ repo_dir | default() }}/flamel-container/flamel.sh"
+        dest: "{{ ansible_env['HOME'] }}/bin/"
+        owner: "{{ ansible_env['LOGNAME'] }}"
+        group: "{{ ansible_env['LOGNAME'] }}"
+        mode: '0775'
+      tags: flamel
+
+    - name: Change flamel.sh to use the {{ default_tag }} tag by default
+      lineinfile:
+        path: "{{ ansible_env['HOME'] }}/bin/flamel.sh"
+        regexp: '^tag='
+        line: 'tag={{ default_tag }}'
+      when: default_tag is defined
+      tags: flamel
+
+    - name: Have flamel kill firefox if 2 CPUs or less
+      blockinfile:
+        path: "{{ ansible_env['HOME'] }}/bin/flamel.sh"
+        marker: "# {mark} KILL FIREFOX"
+        insertafter: '#!/bin/bash'
+        block: "{{ lookup('file', 'files/kill_firefox') }}"
+        state: present
+      when: ansible_facts['processor_count'] <= 2
+      tags: flamel
+
+    - name: Check for existing flamel hard link
+      stat:
+        path: /usr/local/bin/flamel
+      register: flamel_hard
+      tags: flamel
+
+    - name: Create a hard link to flamel
+      become: True
+      file:
+        src: "{{ ansible_env['HOME'] }}/bin/flamel.sh"
+        dest: /usr/local/bin/flamel
+        state: hard
+      tags: flamel
+      when: flamel_hard.stat.exists | bool == False
+
+    - name: Copy the pre-commit installer to {{ ansible_env['HOME'] }}/bin/
+      copy:
+        src: "{{ ansible_env['HOME'] }}/{{ repo_dir | default() }}/pcommit-config/install_precommit.sh"
+        dest: "{{ ansible_env['HOME'] }}/bin/"
+        owner: "{{ ansible_env['LOGNAME'] }}"
+        group: "{{ ansible_env['LOGNAME'] }}"
+        mode: '0775'
+      tags: precommit
+
+    - name: Check if {{ ansible_env['HOME'] }}/.pre-commit-venv exists
+      stat:
+        path: "{{ ansible_env['HOME'] }}/.pre-commit-venv"
+      register: venv
+      tags: precommit
+
+    - name: Run the pre-commit installer
+      command: "{{ ansible_env['HOME'] }}/bin/install_precommit.sh"
+      when: venv.stat.exists == False
+      tags: precommit
+
+    # It could be nice to do this in an idempotent way.
+    - name: Enable pre-commit for each downloaded repository
+      shell: "pushd {{ ansible_env['HOME'] }}/{{ repo_dir }}/{{ item }} && {{ ansible_env['HOME'] }}/bin/pre-commit install"
+      changed_when: false
+      loop: "{{ github_repos }}"
+      loop_control:
+        label: Enabling pre-commit for {{ ansible_env['HOME'] }}/{{ repo_dir | default() }}/{{ item }}
+
+    - name: Configure {{ ansible_env['HOME'] }}/.rpmmacros
+      copy:
+        content: |
+          %_source_filedigest_algorithm 1
+          %_binary_filedigest_algorithm 1
+          %_binary_payload w9.bzdio
+          %_source_payload w9.bzdio
+          %_topdir %(echo $HOME)/rpmbuild
+        dest: "{{ ansible_env['HOME'] }}/.rpmmacros"
+        owner: "{{ ansible_env['LOGNAME'] }}"
+        group: "{{ ansible_env['LOGNAME'] }}"
+        mode: '0664'
+      tags: rpmmacros
+
+    - name: Copy the Red Hat GPG Key to {{ ansible_env['HOME'] }}/.redhat-rpm.asc
+      copy:
+        content: "{{ redhat_rpm }}"
+        dest: "{{ ansible_env['HOME'] }}/.redhat-rpm.asc"
+        owner: "{{ ansible_env['LOGNAME'] }}"
+        group: "{{ ansible_env['LOGNAME'] }}"
+        mode: '0400'
+      when: redhat_rpm is defined
+      tags: rpmkey
+
+    - name: Check imported GPG keys
+      command: gpg --list-keys
+      register: gpg_keys
+      changed_when: false
+      when: redhat_rpm is defined
+      tags: rpmkey
+
+    - name: Import the Red Hat GPG Key passing through the passphrase
+      command: gpg --import --pinentry=loopback --batch --passphrase "{{ rpm_passphrase }}" {{ ansible_env['HOME'] }}/.redhat-rpm.asc
+      when:
+        - redhat_rpm is defined
+        - '"4728F61F1E69315C720A6373A06EF006530679EE" not in gpg_keys.stdout'
+        - '"6E8D8CE81D0E5BEEC5842EC30D4F408AF053023A" not in gpg_keys.stdout'
+      tags: rpmkey
+
+    - name: Remove {{ ansible_env['HOME'] }}/.redhat-rpm.asc
+      file:
+        path: "{{ ansible_env['HOME'] }}/.redhat-rpm.asc"
+        state: absent
+      when: redhat_rpm is defined
+      tags: rpmkey
+
+    - name: Copy aspell.conf to {{ ansible_env['HOME'] }}/.aspell.conf
+      copy:
+        src: "{{ ansible_env['HOME'] }}/{{ repo_dir | default() }}/spellr/aspell.conf"
+        dest: "{{ ansible_env['HOME'] }}/.aspell.conf"
+        owner: "{{ ansible_env['LOGNAME'] }}"
+        group: "{{ ansible_env['LOGNAME'] }}"
+      tags: spellr
+
+    - name: Set dict-dir in {{ ansible_env['HOME'] }}/.aspell.conf
+      lineinfile:
+        path: "{{ ansible_env['HOME'] }}/.aspell.conf"
+        regexp: '^dict-dir'
+        line: "dict-dir /home/{{ ansible_env['LOGNAME'] }}/{{ repo_dir | default() }}/spellr/rh_aspell_dicts"
+      tags: spellr
+
+    - name: Locate the aspell data-dir directory
+      command: aspell config data-dir
+      changed_when: false
+      register: aspell_data_dir
+      tags: spellr
+
+    - name: Copy en.dat to {{ aspell_data_dir.stdout }}
+      become: True
+      copy:
+        src: "{{ ansible_env['HOME'] }}/{{ repo_dir | default() }}/spellr/en.dat"
+        dest: "{{ aspell_data_dir.stdout }}"
+      tags: spellr
+
+    - name: Gather facts
+      setup:
+      tags:
+        - selinux
+        - spellr
+
+    - name: Check SELinux policy on workstation
+      become: True
+      command: sesearch -A -s container_t -t fusefs_t -c file
+      register: selinux_relabel
+      changed_when: false
+      when: ansible_fqdn == "workstation.lab.example.com"
+      tags: selinux
+
+    - name: Update SELinux policy on workstation.lab.example.com
+      become: True
+      command: semodule -X 300 -i files/my-cp.pp
+      when:
+        - ansible_fqdn == "workstation.lab.example.com"
+        - "'allow container_t fusefs_t:file relabelto;' not in selinux_relabel.stdout_lines"
+      tags: selinux
+
+    - name: Install local RPMs for aspell and ascii-doc
+      become: True
+      dnf:
+        name:
+          - files/a2g-0.1.7-1.el8.noarch.rpm
+          - files/aspell-asciidoc-0.2-1.el8.x86_64.rpm
+          - files/rubygem-asciidoctor-1.5.6.1-6.fc30.noarch.rpm
+        state: installed
+        disable_gpg_check: True
+      tags: spellr
+
+    - name: Configure spellr aliases
+      blockinfile:
+        path: "{{ ansible_env['HOME'] }}/.bashrc"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK SPELLR ALIASES"
+        block: "{{ lookup('file', 'files/bashrc_spellr') }}"
+        owner: "{{ ansible_env['LOGNAME'] }}"
+        group: "{{ ansible_env['LOGNAME'] }}"
+        mode: '0644'
+        state: present
+      tags: spellr
+
+    - name: Configure alias to cd to the course ansible directory
+      lineinfile:
+        path: "{{ ansible_env['HOME'] }}/.bashrc"
+        regexp: '^alias course-ansible'
+        line: alias course-ansible="cd {{ ansible_env['HOME'] }}/{{ repo_dir | default() }}/{{ course_upper }}/classroom/grading/src/{{ course_upper | lower }}/ansible/"
+      tags: aliases
