@@ -1,6 +1,6 @@
 ---
 - name: Prep system for flamel container, pre-commit, spellr, and RPM creation
-  hosts: localhost
+  hosts: all
   vars:
     course_upper: "{{ lookup('file', '/etc/rht') | regex_search('RHT_COURSE=.*') | regex_replace('RHT_COURSE=') | upper }}"
     github_repos:
@@ -55,12 +55,12 @@
       ignore_errors: True
       tags: always
 
-    - name: Give {{ ansible_env['LOGNAME'] }} full sudo access
-      become: True
-      copy:
-        content: "{{ ansible_env['LOGNAME'] }}  ALL=(ALL)  NOPASSWD: ALL"
-        dest: /etc/sudoers.d/{{ ansible_env['LOGNAME'] }}
-      tags: sudo
+#    - name: Give {{ ansible_env['LOGNAME'] }} full sudo access
+#      become: True
+#      copy:
+#        content: "{{ ansible_env['LOGNAME'] }}  ALL=(ALL)  NOPASSWD: ALL"
+#        dest: /etc/sudoers.d/{{ ansible_env['LOGNAME'] }}
+#      tags: sudo
 
     - name: Create local directories
       file:

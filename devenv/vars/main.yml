@@ -1,9 +1,9 @@
 ---
-#  devuser: eparenti
+  devuser: student
   packages:
     - vim-minimal
     - vim-enhanced
-    - git
     - aspell
     - podman
+
 

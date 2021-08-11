@@ -15,6 +15,10 @@ set cursorline
 set autoread
 set list listchars=tab:»\ ,extends:›,precedes:‹,nbsp:·,trail:·,eol:↲
 set updatetime=100
+set cursorline
+set cursorcolumn
+set mouse=a " as oppose to 'a' or 'r'
+
 
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
@@ -34,7 +38,7 @@ Plugin 'vim-airline/vim-airline-themes'
 Plugin 'vim-syntastic/syntastic' " Plugin for xml tagging corrections. (like a linter)
 Plugin 'altercation/vim-colors-solarized'
 "Plugin 'dense-analysis/ale'
-Plugin 'tpope/vim-fugitive' " GitHub Wrapper
+" Plugin 'tpope/vim-fugitive' " GitHub Wrapper
 Plugin 'airblade/vim-gitgutter'
 "Plugin 'vim-scripts/lightline'
 " Color Schemes
