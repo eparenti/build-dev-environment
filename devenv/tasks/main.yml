@@ -38,13 +38,15 @@
         dest: "{{ ansible_env['HOME'] }}/.local/bin/"
         owner: "{{ ansible_env['LOGNAME'] }}"
         group: "{{ ansible_env['LOGNAME'] }}"
-        mode: '0664'
+        mode: '0777'
 
-    - name: Install flamel from repo
-      git:
-        repo: 'git@github.com:RedHatTraining/flamel-container.git'
-        dest: ~/Curriculum/flamel-container/
-
+    - name: Copy .tmux.conf file
+      copy:
+        src: files/tmux/.tmux.conf
+        dest: "{{ ansible_env['HOME'] }}/"
+        owner: "{{ ansible_env['LOGNAME'] }}"
+        group: "{{ ansible_env['LOGNAME'] }}"
+        mode: '0700'
 
     - name: Copy .vimrc file
       copy:
@@ -83,8 +85,19 @@
 #        state: started
 #        enabled: true
 
+    - name: Install flamel from repo
+      git:
+        repo: 'git@github.com:RedHatTraining/flamel-container.git'
+        dest: ~/dev/flamel-container/
+
+    - name: Install pre-commit from repo
+      git:
+        repo: 'git@github.com:RedHatTraining/pcommit-config.git'
+        dest: ~/dev/pre-commit/
+
     - name: Install curriculum dev packages
       become: True
-      package:
+      dnf:
         name: "{{ packages }}"
         state: latest
+

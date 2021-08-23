@@ -32,8 +32,8 @@
 [credential]
     helper = cache
 
-[url "https://github.com/"]
-    insteadOf = ssh://git@github.com/
+# [url "https://github.com/"]
+#     insteadOf = ssh://git@github.com/
 
 [pull]
   rebase = true

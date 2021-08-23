@@ -1,7 +1,7 @@
 ---
 - name: Install dev environment
   hosts: all
-  gather_facts: True
+  gather_facts: true
 #  connection: local
 
   roles:

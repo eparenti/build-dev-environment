@@ -22,7 +22,12 @@ if [ -f "$HOME/.bash-git-prompt/gitprompt.sh" ]; then
     source $HOME/.bash-git-prompt/gitprompt.sh
 fi
 
-PS1='\[\033[0;32m\]\[\033[0m\033[0;32m\]\u\[\033[0;36m\] @ \w\[\033[0;32m\] - [$(git branch 2>/dev/null | grep "^*" | colrm 1 2)\[\033[0;32m\]]\[\033[0m\033[0;32m\] \$\[\033[0m\033[0;32m\]\[\033[0m\] '
+#PS1='\[\033[0;32m\]\[\033[0m\033[0;32m\]\u\[\033[0;36m\] @ \w\[\033[0;32m\] - [$(git branch 2>/dev/null | grep "^*" | colrm 1 2)\[\033[0;32m\]]\[\033[0m\033[0;32m\] \$\[\033[0m\033[0;32m\]\[\033[0m\] '
+
+PS1='\[\033[0;32m\]\[\033[0m\033[0;32m\]\u\[\033[0;36m\] @ \w\[\033[0;32m\]\n$(git branch 2>/dev/null | grep "^*" | colrm 1 2)\[\033[0;32m\]└─\[\033[0m\033[0;32m\] \$\[\033[0m\033[0;32m\]\[\033[0m\] '
+
+
+
 
 alias activate='source ~/.venv/rht-labs-core/bin/activate'
 alias sshkey='eval $(ssh-agent) && ssh-add ~/.ssh/id_rsa'
@@ -32,3 +37,5 @@ alias spellcheck='for f in *; do aspell -c $f; done'
 alias spellinglist='for f in * ; do echo $f ; aspell list < $f | sort | uniq -c ; done'
 alias spellr="aspell --mode=asciidoc list | sort | uniq -c | sort -rn"
 alias spellrxml="aspell list | sort | uniq -c | sort -rn"
+alias flamel="flamel.sh"
+alias rebuild='flamel clean; flamel sg; evince ./tmp/en-US/pdf/*'
