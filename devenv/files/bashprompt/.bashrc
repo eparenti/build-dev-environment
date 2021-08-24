@@ -39,3 +39,7 @@ alias spellr="aspell --mode=asciidoc list | sort | uniq -c | sort -rn"
 alias spellrxml="aspell list | sort | uniq -c | sort -rn"
 alias flamel="flamel.sh"
 alias rebuild='flamel clean; flamel sg; evince ./tmp/en-US/pdf/*'
+
+
+
+alias do374='cd ~/dev/DO374/classroom/grading/src/do374'
