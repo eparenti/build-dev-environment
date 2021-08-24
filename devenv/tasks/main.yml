@@ -85,16 +85,16 @@
 #        state: started
 #        enabled: true
 
-    - name: Install flamel from repo
-      git:
-        repo: 'git@github.com:RedHatTraining/flamel-container.git'
-        dest: ~/dev/flamel-container/
-
-    - name: Install pre-commit from repo
-      git:
-        repo: 'git@github.com:RedHatTraining/pcommit-config.git'
-        dest: ~/dev/pre-commit/
-
+#    - name: Install flamel from repo
+#      git:
+#        repo: 'git@github.com:RedHatTraining/flamel-container.git'
+#        dest: ~/dev/flamel-container/
+#
+#    - name: Install pre-commit from repo
+#      git:
+#        repo: 'git@github.com:RedHatTraining/pcommit-config.git'
+#        dest: ~/dev/pre-commit/
+#
     - name: Install curriculum dev packages
       become: True
       dnf:
