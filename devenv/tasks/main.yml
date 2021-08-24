@@ -48,6 +48,17 @@
         group: "{{ ansible_env['LOGNAME'] }}"
         mode: '0700'
 
+
+    - name: Copy resolution/monitors.xml conf file
+      copy:
+        src: files/resolution/monitors.xml
+        dest: "{{ ansible_env['HOME'] }}/.config/"
+        owner: "{{ ansible_env['LOGNAME'] }}"
+        group: "{{ ansible_env['LOGNAME'] }}"
+        mode: '0700'
+
+
+
     - name: Copy .vimrc file
       copy:
         src: files/vim/.vimrc
