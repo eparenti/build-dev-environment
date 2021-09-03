@@ -62,7 +62,7 @@ filetype plugin on    " required
 " see :h vundle for more details or wiki for FAQ
 
 syntax enable
-"colorscheme gruvbox
+colorscheme gruvbox
 set bg=dark
 "runtime matchit.vim
 let g:airline_theme='jellybeans'

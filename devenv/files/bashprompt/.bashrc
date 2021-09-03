@@ -28,7 +28,7 @@ PS1='\[\033[0;32m\]\[\033[0m\033[0;32m\]\u\[\033[0;36m\] @ \w\[\033[0;32m\]\n$(g
 
 
 
-
+alias ll='exa --long --header --git'
 alias activate='source ~/.venv/rht-labs-core/bin/activate'
 alias sshkey='eval $(ssh-agent) && ssh-add ~/.ssh/id_rsa'
 alias deletemerged='git branch --merged | egrep -v "(^\*|master)" | xargs git branch -d'
