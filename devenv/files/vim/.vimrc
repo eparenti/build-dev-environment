@@ -1,82 +1,94 @@
-set wrap
-set linebreak
-set nolist  " list disables linebreak
-set ai sw=2 expandtab
-set laststatus=2
-set nocompatible " be iMproved, required
-set number
-set tabstop=2 " number of visual spaces per TAB
-set showcmd " show command in bottom bar
-"set shiftwidth=2
-"set expandtab
-"set autochdir
-set cursorline
-"set cursorcolumn
-set autoread
-set list listchars=tab:»\ ,extends:›,precedes:‹,nbsp:·,trail:·,eol:↲
-set updatetime=100
-set cursorline
-set cursorcolumn
-set mouse=a " as oppose to 'a' or 'r'
-
-
+set nocompatible              " required
+filetype off                  " required
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
-" let Vundle manage Vundle, required
-Plugin 'VundleVim/Vundle.vim'
-"Plugin 'dhruvasagar/vim-table-mode' " Create tables
-Plugin 'vim-airline/vim-airline' " Content at bottom of vim window.
+Plugin 'gmarik/Vundle.vim'
+
+" All Plugins
+
+Plugin 'mhartington/oceanic-next'
+Plugin 'tmhedberg/SimpylFold'
+Plugin 'vim-scripts/indentpython.vim'
+Plugin 'vim-syntastic/syntastic'
+Plugin 'nvie/vim-flake8'
+Plugin 'scrooloose/nerdtree'
+Plugin 'jistr/vim-nerdtree-tabs'
+Plugin 'kien/ctrlp.vim'
+Plugin 'tpope/vim-fugitive'
+Plugin 'zxqfl/tabnine-vim'
+Plugin 'frazrepo/vim-rainbow'
+Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
-"Plugin 'godlygeek/tabular'
-"Plugin 'plasticboy/vim-markdown'
-"Plugin 'preservim/nerdcommenter'
-"Plugin 'severin-lemaignan/vim-minimap'
-"Plugin 'beloglazov/vim-online-thesaurus'
-"Plugin 'vim-scripts/indentpython.vim'
-" Plugin 'gabrielelana/vim-markdown' " Markdown syntax highlighting
-" Plugin 'Valloric/YouCompleteMe'
-Plugin 'vim-syntastic/syntastic' " Plugin for xml tagging corrections. (like a linter)
-Plugin 'altercation/vim-colors-solarized'
-"Plugin 'dense-analysis/ale'
-" Plugin 'tpope/vim-fugitive' " GitHub Wrapper
-Plugin 'airblade/vim-gitgutter'
-"Plugin 'vim-scripts/lightline'
-" Color Schemes
-"Plugin 'tomsar/molokai'
-Plugin 'flazz/vim-colorschemes'
-Plugin 'joshdick/onedark.vim' " onedark colortheme
-"Plugin 'morhetz/gruvbox'
-Plugin 'jnurmine/Zenburn'
-" All of your Plugins must be added before the following line
+Plugin 'davidhalter/jedi-vim'
+Plugin 'ycm-core/YouCompleteMe'
+
+
 call vundle#end()            " required
-filetype plugin on    " required
-" To ignore plugin indent changes, instead use:
-"filetype plugin on
-"
-" Brief help
-" :PluginList       - lists configured plugins
-" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
-" :PluginSearch foo - searches for foo; append `!` to refresh local cache
-" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
-"
-" see :h vundle for more details or wiki for FAQ
+filetype plugin indent on    " required
 
-syntax enable
-colorscheme gruvbox
-set bg=dark
-"runtime matchit.vim
-let g:airline_theme='jellybeans'
 
-" Removes trailing spaces
-function TrimWhiteSpace()
-  %s/\s*$//
-  ''
-endfunction
+" setting horizontal and vertical splits
+set splitbelow
+set splitright
 
-map <F2> :call TrimWhiteSpace()<CR>
-map! <F2> :call TrimWhiteSpace()<CR>
-autocmd FileWritePre * call TrimWhiteSpace()
-autocmd FileAppendPre * call TrimWhiteSpace()
-autocmd FilterWritePre * call TrimWhiteSpace()
-autocmd BufWritePre * call TrimWhiteSpace()
+"split navigations
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
 
+" Enable folding
+set foldmethod=indent
+set foldlevel=99
+
+" Enable folding with the spacebar
+nnoremap <space> za
+
+
+" Setting up indendation
+
+au BufNewFile, BufRead *.py
+    \ set tabstop=4 |
+    \ set softtabstop=4 |
+    \ set shiftwidth=4 |
+    \ set textwidth=79 |
+    \ set expandtab |
+    \ set autoindent |
+    \ set fileformat=unix
+
+au BufNewFile, BufRead *.js, *.html, *.css
+    \ set tabstop=2 |
+    \ set softtabstop=2 |
+    \ set shiftwidth=2
+
+highlight BadWhitespace ctermbg=red guibg=darkred
+au BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
+
+let g:ycm_autoclose_preview_window_after_completion=1
+map <leader>g  :YcmCompleter GoToDefinitionElseDeclaration<CR>
+
+" setting up pyflakes
+
+let python_highlight_all=1
+syntax on
+
+" nerd tree settings
+let NERDTreeIgnore=['\.pyc$', '\~$'] "ignore files in NERDTree
+
+" setting up line numbering
+set nu
+
+" Rainbow bracket settings
+let g:rainbow_active = 1
+
+" Theme
+ syntax enable
+" for vim 7
+ set t_Co=256
+
+" for vim 8
+ if (has("termguicolors"))
+  set termguicolors
+ endif
+
+colorscheme OceanicNext
