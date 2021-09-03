@@ -57,7 +57,19 @@
         group: "{{ ansible_env['LOGNAME'] }}"
         mode: '0700'
 
+#    - name: EXA -old
+#      copy:
+#        src: files/bashprompt/exa-linux-x86_64-v0.10.0.zip
+#        dest: /usr/local/bin
+#        owner: "{{ ansible_env['LOGNAME'] }}"
+#        group: "{{ ansible_env['LOGNAME'] }}"
+#        mode: '0700'
 
+    - name: Install exa
+      ansible.builtin.unarchive:
+        src: files/bashprompt/exa-linux-x86_64-v0.10.0.zip
+        dest: /usr/local/bin
+        remote_src: yes
 
     - name: Copy .vimrc file
       copy:
