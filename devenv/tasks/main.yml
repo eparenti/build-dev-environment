@@ -66,6 +66,7 @@
 #        mode: '0700'
 
     - name: Install exa
+      become: True
       ansible.builtin.unarchive:
         src: files/bashprompt/exa-linux-x86_64-v0.10.0.zip
         dest: /usr/local/bin
