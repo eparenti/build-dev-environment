@@ -24,13 +24,13 @@
 #        group: "{{ ansible_env['LOGNAME'] }}"
 #        mode: '0700'
 #
-#    - name: Copy .gitconfig file
-#      copy:
-#        src: files/gitconfig/.gitconfig
-#        dest: "{{ ansible_env['HOME'] }}/"
-#        owner: "{{ ansible_env['LOGNAME'] }}"
-#        group: "{{ ansible_env['LOGNAME'] }}"
-#        mode: '0700'
+    - name: Copy .gitconfig file
+      copy:
+        src: files/gitconfig/.gitconfig
+        dest: "{{ ansible_env['HOME'] }}/"
+        owner: "{{ ansible_env['LOGNAME'] }}"
+        group: "{{ ansible_env['LOGNAME'] }}"
+        mode: '0700'
 
     - name: Copy flamel container wrapper script
       copy:
