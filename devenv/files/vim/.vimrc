@@ -20,12 +20,12 @@ Plugin 'frazrepo/vim-rainbow'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'davidhalter/jedi-vim'
-Plugin 'ycm-core/YouCompleteMe'
-
+" Plugin 'ycm-core/YouCompleteMe'
+Plugin 'itchyny/lightline.vim'
 
 call vundle#end()            " required
 filetype plugin indent on    " required
-
+,
 
 " setting horizontal and vertical splits
 set splitbelow
@@ -56,10 +56,17 @@ au BufNewFile, BufRead *.py
     \ set autoindent |
     \ set fileformat=unix
 
-au BufNewFile, BufRead *.js, *.html, *.css
+au BufNewFile, BufRead *.js, *.html, *.css, *.adoc
     \ set tabstop=2 |
     \ set softtabstop=2 |
     \ set shiftwidth=2
+
+au FileType yaml setlocal ai ts=2 sts=2 sw=2 et 
+"
+" Set column line
+set cursorcolumn
+set cursorline
+
 
 highlight BadWhitespace ctermbg=red guibg=darkred
 au BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
