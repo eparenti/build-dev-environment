@@ -65,7 +65,7 @@
 #        group: "{{ ansible_env['LOGNAME'] }}"
 #        mode: '0700'
 
-#    - name: Install exa
+#    - name: Install exa command line
 #      become: True
 #      ansible.builtin.unarchive:
 #        src: files/bashprompt/exa.zip
