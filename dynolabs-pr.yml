@@ -1,0 +1,149 @@
+---
+- name: Configure system for DynoLabs peer review
+  hosts: workstation
+  gather_facts: true
+  vars:
+    repo_dir: dev
+    github_private_key: github_rsa
+    sku: "{{ lookup('file', '/etc/rht') | regex_search('RHT_COURSE=.*') | regex_replace('RHT_COURSE=') }}"
+    # When performing a peer review, set the "pr" variable to something like "101"
+    repos:
+      - name: "{{ sku | upper }}"
+        branch: master
+  tasks:
+    - name: Fail if pr is not defined
+      fail:
+        msg: The "pr" variable must be defined, such as "101".
+      when: pr is not defined
+
+    - name: Set student_venv fact
+      set_fact:
+        student_venv: /home/student/pr{{ pr }}
+
+    - name: Check if "/home/student/{{ repo_dir }}/{{ sku | upper }}" exists
+      stat:
+        path: /home/student/{{ repo_dir }}/{{ sku | upper }}
+      register: course_repo_local
+
+    - name: Check for github SSH keys
+      stat:
+        path: /home/student/.ssh/{{ github_private_key }}
+      register: github_ssh
+
+    - name: Clone Course Repositories with SSH keys
+      git:
+        repo: "git@github.com:RedHatTraining/{{ item['name'] }}"
+        dest: "/home/student/{{ repo_dir }}/{{ item['name'] }}"
+        version: "{{ item['branch'] }}"
+      loop: "{{ repos }}"
+      loop_control:
+        label: Cloning {{ item['name'] }} repository to /home/student/{{ repo_dir }}/{{ item['name'] }}
+      when:
+        - course_repo_local['stat']['exists'] | bool == False
+        - github_ssh['stat']['exists']
+
+    - name: Clone Course Repositories with https
+      git:
+        repo: "https://github.com/RedHatTraining/{{ item['name'] }}"
+        dest: "/home/student/{{ repo_dir }}/{{ item['name'] }}"
+        version: "{{ item['branch'] }}"
+      loop: "{{ repos }}"
+      loop_control:
+        label: Cloning {{ item['name'] }} repository to /home/student/{{ repo_dir }}/{{ item['name'] }}
+      when:
+        - course_repo_local['stat']['exists'] | bool == False
+        - github_ssh['stat']['exists'] | bool == False
+
+    - name: Check for virtual environment directory
+      stat:
+        path: "{{ student_venv }}"
+      register: venv_dir
+
+    - block:
+        - name: Remove path
+          file:
+            path: "{{ student_venv }}"
+            state: absent
+
+        - name: Create virtual environment
+          pip:
+            name:
+              - pip
+              - setuptools
+              - wheel
+            virtualenv: "{{ student_venv }}"
+            virtualenv_site_packages: yes
+          register: new_venv
+      when:
+        - venv_dir['stat']['isdir'] is defined
+        - venv_dir['stat']['isdir'] | bool == False
+
+    - name: Create virtual environment
+      pip:
+        name:
+          - pip
+          - setuptools
+          - wheel
+        virtualenv: "{{ student_venv }}"
+        virtualenv_site_packages: yes
+      register: new_venv
+      when: venv_dir['stat']['isdir'] is not defined
+      
+    - block:
+        - name: Activate correct virtual environment
+          debug:
+            msg: "Run: source {{ student_venv }}/bin/activate"
+
+        - name: Run playbook again
+          debug:
+            msg: "Run the step above and then run this playbook again."
+      when: ansible_facts['env']['VIRTUAL_ENV'] is not defined
+      
+    - block:
+        - name: Deactivate current virtual environment
+          debug:
+            msg: "Run: deactivate"
+
+        - name: Activate correct virtual environment
+          debug:
+            msg: "Run: source {{ student_venv }}/bin/activate"
+
+        - name: Run playbook again
+          debug:
+            msg: "Run the steps above and then run this playbook again."
+      when:
+        - ansible_facts['env']['VIRTUAL_ENV'] is defined
+        - ansible_facts['env']['VIRTUAL_ENV'] != student_venv
+      
+    - block:
+        #- name: "Run: make clean"
+        #  make:
+        #    chdir: /home/student/{{ repo_dir }}/{{ sku | upper }}/classroom/grading
+        #    target: clean
+
+        #- name: "Run: make build"
+        #  make:
+        #    chdir: /home/student/{{ repo_dir }}/{{ sku | upper }}/classroom/grading
+        #    target: build
+        #  register: make_build
+
+        #- name: Identify tar.gz file
+        #  command: ls /home/student/{{ repo_dir }}/{{ sku | upper }}/classroom/grading/dist/
+        #  changed_when: false
+        #  register: tar_name
+
+        - name: Install course package
+          pip:
+            #name: file:///home/student/{{ repo_dir }}/{{ sku | upper }}/classroom/grading/dist/{{ tar_name['stdout_lines'][0] }}
+            name: rht-labs-do374==0.0.1.dev0+pr{{ pr }}
+            virtualenv: "{{ student_venv }}"
+            virtualenv_site_packages: yes
+          environment:
+            PIP_EXTRA_INDEX_URL: "https://pypi.apps.tools.dev.nextcle.com/repository/labs/simple/"
+
+        - name: Select course for DynoLabs
+          command: lab select {{ sku | lower }}
+          changed_when: false
+      when:
+        - ansible_facts['env']['VIRTUAL_ENV'] is defined
+        - ansible_facts['env']['VIRTUAL_ENV'] == student_venv
