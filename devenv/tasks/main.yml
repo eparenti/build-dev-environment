@@ -126,6 +126,7 @@
         state: latest
 
     - name: Install Python packages
+      become: True
       pip:
         name:
           - flake8
