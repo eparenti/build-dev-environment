@@ -17,3 +17,14 @@ To be added in future iterations
 1. Clone repository
 2. Modify variables in vars/main.yml
 3. Run `ansible-playbook deploy.yml'
+
+
+
+YouCompleteMe vim plugin
+YCM does not work without extra steps.
+
+$ cd ~/.vim/bundle/YouCompleteMe
+$ git checkout d98f896
+$ git submodule update --init --recursive
+$ sudo dnf install cmake gcc-c++ make python3-devel
+$ python3 install.py

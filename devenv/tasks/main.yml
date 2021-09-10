@@ -98,9 +98,9 @@
 #        repo: 'git@github.com:dallasspohn/vale.git'
 #        dest: /home/student/vale
 
-    - name: Run PluginInstall
-      shell: vim +'PlugInstall --sync' +qa
-      ignore_errors: yes
+#    - name: Run PluginInstall
+#      shell: vim +'PlugInstall --sync' +qa
+#      ignore_errors: yes
 
 #    - name: Ensure podman is started
 #      become: True
@@ -125,3 +125,8 @@
         name: "{{ packages }}"
         state: latest
 
+    - name: Install Python packages
+      pip:
+        name:
+          - flake8
+          - black
