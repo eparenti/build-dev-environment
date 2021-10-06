@@ -29,6 +29,6 @@ $ git submodule update --init --recursive
 $ sudo dnf install cmake gcc-c++ make python3-devel
 $ python3 install.py
 
-
+### Run dynolabs-pr ### i.e. 560
 
 deactivate && rm -rf ~/<venv-name>/
