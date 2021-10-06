@@ -28,3 +28,7 @@ $ git checkout d98f896
 $ git submodule update --init --recursive
 $ sudo dnf install cmake gcc-c++ make python3-devel
 $ python3 install.py
+
+
+
+deactivate && rm -rf ~/<venv-name>/

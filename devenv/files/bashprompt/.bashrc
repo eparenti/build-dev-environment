@@ -9,6 +9,10 @@ if [ -f /etc/bash_completion.d/lab_completion.bash ]; then
     . /etc/bash_completion.d/lab_completion.bash
 fi
 
+if [ -f ~/.bashrc_dynolabs ]; then
+    . ~/.bashrc_dynolabs
+fi
+
 # User specific environment
 PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 export PATH

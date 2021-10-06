@@ -7,6 +7,14 @@
         group: "{{ ansible_env['LOGNAME'] }}"
         mode: '0700'
 
+    - name: Copy .bashrc_dynolabs file
+      copy:
+        src: files/bashprompt/.bashrc_dynolabs
+        dest: "{{ ansible_env['HOME'] }}/.bashrc_dynolabs"
+        owner: "{{ ansible_env['LOGNAME'] }}"
+        group: "{{ ansible_env['LOGNAME'] }}"
+        mode: '0700'
+
     - name: Copy bash-git-prompt files
       copy:
         src: files/bashprompt/.bash-git-prompt/
