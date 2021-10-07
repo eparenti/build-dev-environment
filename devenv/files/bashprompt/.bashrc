@@ -43,7 +43,8 @@ alias spellr="aspell --mode=asciidoc list | sort | uniq -c | sort -rn"
 alias spellrxml="aspell list | sort | uniq -c | sort -rn"
 alias flamel="flamel.sh"
 alias rebuild='flamel clean; flamel sg; evince ./tmp/en-US/pdf/*'
-
+alias activate='source ~/.venv/labs/bin/activate'
+alias dynobuild='cd ~/dev/DO374/classroom/grading/; make clean; make build; pip install --no-cache-dir dist/*.gz'
 
 
 alias do374='cd ~/dev/DO374/classroom/grading/src/do374'
