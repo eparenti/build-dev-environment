@@ -31,6 +31,23 @@
 #        owner: "{{ ansible_env['LOGNAME'] }}"
 #        group: "{{ ansible_env['LOGNAME'] }}"
 #        mode: '0700'
+#
+    - name: Creates pip directory
+      file:
+        path: /home/student/.config/pip
+        state: directory
+        owner: student
+        group: student
+        mode: '0777'
+
+    - name: Copy pip.conf file
+      become: true
+      copy:
+        src: files/pypi/pip.conf  
+        dest: /home/student/.config/pip/pip.conf
+        owner: "{{ ansible_env['LOGNAME'] }}"
+        group: "{{ ansible_env['LOGNAME'] }}"
+        mode: '0644'
 
     - name: Copy .gitconfig file
       copy:
