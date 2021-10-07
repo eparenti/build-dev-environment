@@ -29,6 +29,24 @@ $ git submodule update --init --recursive
 $ sudo dnf install cmake gcc-c++ make python3-devel
 $ python3 install.py
 
-### Run dynolabs-pr ### i.e. 560
+# CD to
+`DO374/classroom/grading/`
+
+# then run
+`make clean and make build`
+
+
+## Run dynolabs-pr 560
 
 deactivate && rm -rf ~/<venv-name>/
+
+alias dynobuild='cd ~/dev/DO374/classroom/grading/; make clean; make build; pip install --no-cache-dir dist/*.gz'
+
+
+pip instll
+
+
+--force-reinstall
+--no-cache-dir
+pip uninstall _________
+pip install --no-cache-dir /path/to/*.tar.gz
