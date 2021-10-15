@@ -13,8 +13,8 @@
           <serial>0x00000000</serial>
         </monitorspec>
         <mode>
-          <width>1024</width>
-          <height>768</height>
+          <width>1600</width>
+          <height>900</height>
           <rate>60</rate>
         </mode>
       </monitor>
@@ -55,8 +55,8 @@
           <serial>0x00000000</serial>
         </monitorspec>
         <mode>
-          <width>1024</width>
-          <height>768</height>
+          <width>1600</width>
+          <height>900</height>
           <rate>60</rate>
         </mode>
       </monitor>
@@ -76,8 +76,8 @@
           <serial>0x00000000</serial>
         </monitorspec>
         <mode>
-          <width>1024</width>
-          <height>768</height>
+          <width>1600</width>
+          <height>900</height>
           <rate>60</rate>
         </mode>
       </monitor>
