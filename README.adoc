@@ -11,6 +11,8 @@
 = TODO:
 To be added in future iterations
 - Vale
+- Nov 3 2021 Added a live path to the files/bin folder.
+
 
 = Instructions
 
