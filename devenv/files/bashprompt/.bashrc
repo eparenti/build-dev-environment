@@ -14,7 +14,7 @@ if [ -f ~/.bashrc_dynolabs ]; then
 fi
 
 # User specific environment
-PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+PATH="$HOME/.local/bin:$HOME/bin:$HOME/dev/build-dev-environment/devenv/files/bin/:$PATH"
 export PATH
 
 if [ -f "$HOME/.bash-git-prompt/gitprompt.sh" ]; then
