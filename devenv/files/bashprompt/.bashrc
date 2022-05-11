@@ -14,7 +14,7 @@ if [ -f ~/.bashrc_dynolabs ]; then
 fi
 
 # User specific environment
-PATH="$HOME/.local/bin:$HOME/bin:$HOME/dev/build-dev-environment/devenv/files/bin/:$PATH"
+# PATH="$HOME/.local/bin:$HOME/bin:$HOME/dev/build-dev-environment/devenv/files/bin/:$PATH"
 export PATH
 
 if [ -f "$HOME/.bash-git-prompt/gitprompt.sh" ]; then
@@ -48,3 +48,4 @@ alias dynobuild='cd ~/dev/DO374/classroom/grading/; make clean; make build; pip 
 
 
 alias do374='cd ~/dev/DO374/classroom/grading/src/do374'
+eval "$(starship init bash)"
