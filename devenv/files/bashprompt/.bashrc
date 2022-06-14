@@ -45,7 +45,7 @@ alias flamel="flamel.sh"
 alias rebuild='flamel clean; flamel sg; evince ./tmp/en-US/pdf/*'
 alias activate='source ~/.venv/labs/bin/activate'
 alias dynobuild='cd ~/dev/DO374/classroom/grading/; make clean; make build; pip install --no-cache-dir dist/*.gz'
-
+alias scripts='cd cd ~/.venv/labs/lib/python3.6/site-packages/do467/'
 
 alias do374='cd ~/dev/DO374/classroom/grading/src/do374'
 eval "$(starship init bash)"
