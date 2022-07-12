@@ -149,5 +149,16 @@
           - flake8
           - black
 
-#   - name: Install Starship
-#      shell: files/starship.sh
+    - name: Curl ifconfig.me
+      ansible.builtin.command: curl ifconfig.me
+      register: myoutput
+
+# - hosts: external-ip:!amazon
+#   tasks:
+#     - name: get host's external IP address
+#       # See http://www.commandlinefu.com/commands/view/5427/get-your-external-ip-address
+#       # for alternatives to this command
+#       command: curl --silent --fail http://ifconfig.me/ip
+#       register: host_external_ip
+
+#     - set_fact: external_hostname="{{host_external_ip.stdout}}"
