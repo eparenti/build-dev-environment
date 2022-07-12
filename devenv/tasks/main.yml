@@ -89,6 +89,14 @@
         dest: /usr/local/bin/
         remote_src: yes
 
+    - name: Move EXA program
+      copy:
+        src: /usr/local/bin/bin/exa
+        dest: /usr/local/bin/"
+        owner: "{{ ansible_env['LOGNAME'] }}"
+        group: "{{ ansible_env['LOGNAME'] }}"
+        #mode: '0700'
+
     - name: Copy .vimrc file
       copy:
         src: files/vim/.vimrc
