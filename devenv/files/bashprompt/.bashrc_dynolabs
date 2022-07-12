@@ -6,7 +6,7 @@ function dynolabs-pr {
     package_base="$(pip freeze | grep rht-labs-${course,,} | sed 's/.*==\(.*\)\.dev.*/\1/')"
     if [ -z "${package_base}" ]
     then
-      package_base="0.0.1"
+      package_base="2.2.0"
     fi
     lab install -u --env test --version ${package_base}.dev0+pr${PR} ${course,,} &> /dev/null
     if [ $? -eq 0 ]
