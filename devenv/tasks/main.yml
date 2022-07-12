@@ -96,7 +96,7 @@
         dest: /usr/local/bin/exa
         owner: "{{ ansible_env['LOGNAME'] }}"
         group: "{{ ansible_env['LOGNAME'] }}"
-        #mode: '0700'
+        mode: a+x
 
     - name: Copy .vimrc file
       copy:
