@@ -158,5 +158,5 @@
       # for alternatives to this command
       command: curl --silent --fail http://ifconfig.me/ip
       register: host_external_ip
-
-    - set_fact: external_hostname="{{host_external_ip.stdout}}"
+    - debug: msg="{{ hostname_external_ip.stdout }}"
+#    - set_fact: external_hostname="{{host_external_ip.stdout}}"
