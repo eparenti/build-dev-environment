@@ -90,6 +90,7 @@
         remote_src: yes
 
     - name: Move EXA program
+      become: True
       copy:
         src: /usr/local/bin/bin/exa
         dest: /usr/local/bin/"
