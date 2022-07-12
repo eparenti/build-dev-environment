@@ -86,7 +86,7 @@
       become: True
       ansible.builtin.unarchive:
         src: /home/student/dev/build-dev-environment/devenv/files/bashprompt/exa.zip
-        dest: /usr/local/
+        dest: /usr/local/bin/
         remote_src: yes
 
     - name: Copy .vimrc file
