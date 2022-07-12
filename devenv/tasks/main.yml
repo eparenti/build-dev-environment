@@ -157,5 +157,5 @@
           - flake8
           - black
 
-    - name: Install Starship
-      shell: files/starship.sh
+#   - name: Install Starship
+#      shell: files/starship.sh
