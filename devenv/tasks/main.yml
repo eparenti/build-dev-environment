@@ -82,12 +82,12 @@
         group: "{{ ansible_env['LOGNAME'] }}"
         mode: '0700'
 
-   - name: Install exa command line
-     become: True
-     ansible.builtin.unarchive:
-       src: /home/student/dev/build-dev-environment/devenv/files/bashprompt/exa.zip
-       dest: /usr/local/bin
-       remote_src: yes
+    - name: Install exa command line
+      become: True
+      ansible.builtin.unarchive:
+        src: /home/student/dev/build-dev-environment/devenv/files/bashprompt/exa.zip
+        dest: /usr/local/bin
+        remote_src: yes
 
     - name: Copy .vimrc file
       copy:
