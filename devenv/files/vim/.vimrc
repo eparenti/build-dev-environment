@@ -98,4 +98,5 @@ let g:rainbow_active = 1
   set termguicolors
  endif
 
-colorscheme OceanicNext
+" colorscheme OceanicNext
+colorscheme desert
