@@ -93,7 +93,7 @@
       become: True
       copy:
         src: /usr/local/bin/bin/exa
-        dest: /usr/local/bin/exa"
+        dest: /usr/local/bin/exa
         owner: "{{ ansible_env['LOGNAME'] }}"
         group: "{{ ansible_env['LOGNAME'] }}"
         #mode: '0700'
