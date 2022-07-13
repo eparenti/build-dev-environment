@@ -48,4 +48,4 @@ alias dynobuild='cd ~/dev/DO374/classroom/grading/; make clean; make build; pip 
 alias labs='cd ~/.venv/labs/lib/python3.6/site-packages/do467/'
 
 
-eval "$(starship init bash)"
+# eval "$(starship init bash)"

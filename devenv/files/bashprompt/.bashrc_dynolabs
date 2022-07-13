@@ -1,5 +1,5 @@
 function dynolabs-pr {
-  PR=".${1}"
+  PR="${1}"
   if [ -n "${PR}" ]
   then
     course="$(grep RHT_COURSE /etc/rht | cut -d= -f2)"
