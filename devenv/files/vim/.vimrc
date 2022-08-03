@@ -1,4 +1,5 @@
 set nocompatible              " required
+set spell
 filetype off                  " required
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
@@ -61,7 +62,7 @@ au BufNewFile, BufRead *.js, *.html, *.css, *.adoc
     \ set softtabstop=2 |
     \ set shiftwidth=2
 
-au FileType yaml setlocal ai ts=2 sts=2 sw=2 et 
+au FileType yaml setlocal ai ts=2 sts=2 sw=2 et
 "
 " Set column line
 set cursorcolumn
