@@ -9,7 +9,7 @@ Plugin 'gmarik/Vundle.vim'
 
 Plugin 'mhartington/oceanic-next'
 Plugin 'tmhedberg/SimpylFold'
-#Plugin 'vim-scripts/indentpython.vim'
+" Plugin 'vim-scripts/indentpython.vim'
 Plugin 'vim-syntastic/syntastic'
 Plugin 'nvie/vim-flake8'
 Plugin 'scrooloose/nerdtree'
