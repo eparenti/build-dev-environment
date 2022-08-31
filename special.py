@@ -28,10 +28,18 @@ special = [
 ]
 
 
+def run_lab():
+    for run in special:
+        print(run)
+        os.system("lab start " + run)
+        os.system("lab finish " + run)
+
+
 def start_lab():
     for start in special:
         print(start)
         os.system("lab start " + start)
+
 
 def finish_lab():
     for finish in special:
@@ -39,5 +47,6 @@ def finish_lab():
         os.system("lab finish " + finish)
 #
 
+run_lab()
 start_lab()
 finish_lab()
