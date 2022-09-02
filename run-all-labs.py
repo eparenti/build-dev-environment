@@ -13,7 +13,16 @@ ch8 = ["code-collection", "code-webhooks", "code-api", "code-review"]  # ,'','']
 ch9 = ["admin-troubleshoot", "admin-recovery"]
 ch10 = ["", "", ""]
 ch11 = ["mesh-deploy-solve", "mesh-manage", ""]
-
+ch12 = [
+    "compreview-mesh",
+    "compreview-users",
+    "compreview-hub",
+    "compreview-inventory",
+    "compreview-templates",
+    "compreview-workflow",
+    "start compreview-api",
+    "compreview-backup",
+]
 
 for c2 in ch2:
     print(c2)
@@ -56,12 +65,15 @@ for c9 in ch9:
     os.system("lab finish " + c9)
 
 for c11 in ch11:
-    print(c9)
+    print(c11)
     os.system("lab start " + c11)
     os.system("lab finish " + c11)
 
+for c12 in ch12:
+    print(c12)
+    os.system("lab start " + c12)
+    os.system("lab finish " + c12)
 
 # with open("lab-scripts.yml", 'r') as stream:
 #    out = yaml.load(stream)
 #    print(out["scripts"]["chapter"])
-
