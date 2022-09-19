@@ -1,0 +1,15 @@
+---
+- name: Build the Ubuntu Plex server
+  hosts: localhost
+  gather_facts: true
+  become: yes
+
+  tasks:
+  - name: install vim
+    apt: name=vim state=present
+  
+  - name: install open-ssh
+    apt: name=openssh-server state=present
+
+  - name: install git
+    apt: name=git state=present
