@@ -1,0 +1,164 @@
+---
+    - name: Copy .bashrc file
+      copy:
+        src: files/bashprompt/.bashrc
+        dest: "{{ ansible_env['HOME'] }}/.bashrc"
+        owner: "{{ ansible_env['LOGNAME'] }}"
+        group: "{{ ansible_env['LOGNAME'] }}"
+        mode: '0700'
+
+    - name: Copy .bashrc_dynolabs file
+      copy:
+        src: files/bashprompt/.bashrc_dynolabs
+        dest: "{{ ansible_env['HOME'] }}/.bashrc_dynolabs"
+        owner: "{{ ansible_env['LOGNAME'] }}"
+        group: "{{ ansible_env['LOGNAME'] }}"
+        mode: '0700'
+
+    - name: Copy bash-git-prompt files
+      copy:
+        src: files/bashprompt/.bash-git-prompt/
+        dest: "{{ ansible_env['HOME'] }}.bash-git-prompt/"
+        owner: "{{ ansible_env['LOGNAME'] }}"
+        group: "{{ ansible_env['LOGNAME'] }}"
+        mode: '0700'
+
+    - name: Creates pip directory
+      file:
+        path: /home/dallas/.config/pip
+        state: directory
+        owner: dallas
+        group: dallas
+        mode: '0777'
+
+        #    - name: Copy pip.conf file
+        #      become: true
+        #      copy:
+        #        src: files/pypi/pip.conf  
+        #        dest: /home/student/.config/pip/pip.conf
+        #        owner: "{{ ansible_env['LOGNAME'] }}"
+        #        group: "{{ ansible_env['LOGNAME'] }}"
+        #        mode: '0644'
+        #
+    - name: Copy .gitconfig file
+      copy:
+        src: files/gitconfig/.gitconfig
+        dest: "{{ ansible_env['HOME'] }}"
+        owner: "{{ ansible_env['LOGNAME'] }}"
+        group: "{{ ansible_env['LOGNAME'] }}"
+        mode: '0700'
+
+        #    - name: Copy flamel container wrapper script
+        #      copy:
+        #        src: files/flamelc/flamel.sh
+        #        dest: "{{ ansible_env['HOME'] }}/.local/bin/"
+        #        owner: "{{ ansible_env['LOGNAME'] }}"
+        #        group: "{{ ansible_env['LOGNAME'] }}"
+        #        mode: '0777'
+        #
+    - name: Copy .tmux.conf file
+      copy:
+        src: files/tmux/.tmux.conf
+        dest: "{{ ansible_env['HOME'] }}/"
+        owner: "{{ ansible_env['LOGNAME'] }}"
+        group: "{{ ansible_env['LOGNAME'] }}"
+        mode: '0700'
+
+
+        #    - name: Copy resolution/monitors.xml conf file
+        #      copy:
+        #        src: files/resolution/monitors.xml
+        #        dest: "{{ ansible_env['HOME'] }}/.config/"
+        #        owner: "{{ ansible_env['LOGNAME'] }}"
+        #        group: "{{ ansible_env['LOGNAME'] }}"
+        #        mode: '0700'
+        #
+    - name: Install exa command line
+      become: True
+      ansible.builtin.unarchive:
+        src: /home/dallas/bin/build-dev-environment/devenv/files/bashprompt/exa.zip
+        dest: /usr/local/bin/
+        remote_src: yes
+
+    - name: Move EXA program
+      become: True
+      copy:
+        src: /usr/local/bin/bin/exa
+        dest: /usr/local/bin/exa
+        owner: "{{ ansible_env['LOGNAME'] }}"
+        group: "{{ ansible_env['LOGNAME'] }}"
+        mode: a+x
+
+    - name: Copy .vimrc file
+      copy:
+        src: files/vim/.vimrc
+        dest: "{{ ansible_env['HOME'] }}/"
+        owner: "{{ ansible_env['LOGNAME'] }}"
+        group: "{{ ansible_env['LOGNAME'] }}"
+        mode: '0700'
+
+    - name: Copy vim plugin files
+      #synchronize:
+      copy:
+        src: files/vim/.vim/
+        dest: "{{ ansible_env['HOME'] }}/.vim/"
+        owner: "{{ ansible_env['LOGNAME'] }}"
+        group: "{{ ansible_env['LOGNAME'] }}"
+        mode: '0775'
+
+    - name: Install Vundle Plugin from git
+      git:
+        repo: 'https://github.com/VundleVim/Vundle.vim.git'
+        dest: ~/.vim/bundle/Vundle.vim
+
+#    - git: Download Vale Styles
+#        repo: 'git@github.com:dallasspohn/vale.git'
+#        dest: /home/student/vale
+
+#    - name: Run PluginInstall
+#      shell: vim +'PlugInstall --sync' +qa
+#      ignore_errors: yes
+
+#    - name: Ensure podman is started
+#      become: True
+#      service:
+#        name: podman
+#        state: started
+#        enabled: true
+
+#    - name: Install flamel from repo
+#      git:
+#        repo: 'git@github.com:RedHatTraining/flamel-container.git'
+#        dest: ~/dev/flamel-container/
+#
+#    - name: Install pre-commit from repo
+#      git:
+#        repo: 'git@github.com:RedHatTraining/pcommit-config.git'
+#        dest: ~/dev/pre-commit/
+
+        #    - name: Install curriculum dev packages
+        #      become: True
+        #      dnf:
+        #        name: "{{ packages }}"
+        #        state: latest
+        #
+    - name: Install Python packages
+      become: True
+      pip:
+        name:
+          - flake8
+          - black
+          - pyautogui
+
+    # - name: Curl ifconfig.me
+    #   ansible.builtin.command: curl ifconfig.me
+    #   register: myoutput
+
+    - name: get host's external IP address
+      # See http://www.commandlinefu.com/commands/view/5427/get-your-external-ip-address
+      # for alternatives to this command
+      command: curl --silent --fail http://ifconfig.me/ip
+      register: host_external_ip
+
+    - debug: msg="{{ host_external_ip.stdout }}"
+#    - set_fact: external_hostname="{{host_external_ip.stdout}}"

@@ -1,0 +1,8 @@
+---
+  devuser: student
+  packages:
+    - vim-minimal
+    - vim-enhanced
+    - aspell
+    - podman
+    - make

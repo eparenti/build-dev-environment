@@ -13,3 +13,11 @@
 
   - name: install git
     apt: name=git state=present
+    
+ # sudo wget https://ocean.surfshark.com/debian/pool/main/s/surfshark-release/surfshark-release_1.0.0-2_amd64.deb
+ # sudo dpkg -i surfshark-release_1.0.0-2_amd64.deb
+ # sudo apt-get install surfshark-vpn
+ #
+ #
+ #
+ #

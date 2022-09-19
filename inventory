@@ -3,3 +3,6 @@
 [workstation]
 workstation
 #dev_workstation ansible_user=student ansible_ssh_private_key_file=/Users/dallas/.ssh/instructor_key
+
+[plex]
+192.168.1.223
